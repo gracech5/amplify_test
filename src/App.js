@@ -1,23 +1,46 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState, useEffect } from 'react'
+import { Storage } from 'aws-amplify'
 
 function App() {
+  const [images, setImages] = useState([])
+  useEffect(() => {
+    fetchImages()
+  }, [])
+  async function fetchImages() {
+    let imageKeys = await Storage.list('')
+    imageKeys = await Promise.all(imageKeys.map(async k => {
+      const key = await Storage.get(k.key)
+      return key
+    }))
+    console.log('imageKeys: ', imageKeys)
+    setImages(imageKeys)
+  }
+  async function onChange(e) {
+    const file = e.target.files[0];
+    const result = await Storage.put(file.name, file, {
+      contentType: 'image/png'
+    })
+    console.log({ result })
+    fetchImages()
+  }
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>Test</h1>
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
+        {
+          images.map(image => (
+            <img
+              src={image}
+              key={image}
+              style={{width: 500, height: 300}}
+            />
+          ))
+        }
+      </div>
+      <input
+        type="file"
+        onChange={onChange}
+      />
     </div>
   );
 }
