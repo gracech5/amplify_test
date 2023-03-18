@@ -17,6 +17,12 @@
       },
       "storage": {
         "uploadimages2": {}
+      },
+      "hosting": {
+        "amplifyhosting": {
+          "appId": "d152bcanrxl0lu",
+          "type": "cicd"
+        }
       }
     }
   }
